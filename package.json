@@ -1,0 +1,21 @@
+{
+  "name": "eth-usdt-rate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/getPrice.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@thanpolas/univ3prices": "^3.0.2",
+    "@uniswap/v3-periphery": "^1.4.4",
+    "@uniswap/v3-sdk": "^3.13.1",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.1",
+    "jsbi": "^3.2.5",
+    "web3": "^4.11.0"
+  }
+}
