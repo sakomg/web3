@@ -1,0 +1,25 @@
+{
+  "engines": {
+    "node": ">=20.6.0"
+  },
+  "name": "web3-arbitration",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "scripts": {
+    "build": "tsc",
+    "copy:env": "cp .env.example .env",
+    "dev": "node --env-file=.env --watch -r ts-node/register src/main.ts",
+    "start": "node dist/index.js"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@dedust/sdk": "^0.8.7",
+    "@ton/crypto": "^3.2.0",
+    "@ton/ton": "^13.11.2"
+  }
+}
