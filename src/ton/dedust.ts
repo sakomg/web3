@@ -21,11 +21,15 @@ const ASSETS = {
   USDT: Asset.jetton(
     Address.parse("EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs")
   ),
+  MY: Asset.jetton(
+    Address.parse("EQCFVNlRb-NHHDQfv3Q9xvDXBLJlay855_xREsq5ZDX6KN-w")
+  ),
 };
 
 export class DeDustService {
   private readonly tonClient: TonClient4;
   private readonly factory: OpenedContract<Factory>;
+  private readonly mnemonicStr: string;
 
   constructor() {
     this.tonClient = new TonClient4({
@@ -35,6 +39,8 @@ export class DeDustService {
     this.factory = this.tonClient.open(
       Factory.createFromAddress(MAINNET_FACTORY_ADDR)
     );
+
+    this.mnemonicStr = process.env.TON_MNEMONIC ?? "";
   }
 
   public startTrackPairs() {
@@ -51,23 +57,19 @@ export class DeDustService {
       );
 
       console.log({ tonToUsdt, usdtToTon });
-    }, 5000);
+    }, 2000);
   }
 
   public async swapTonToUsdt(amountOfTon: number) {
-    const mnemonic = this.convertMnemonicStringToArray(process.env.MNEMONIC);
-    const keys = await mnemonicToPrivateKey(mnemonic);
-
-    const wallet = this.tonClient.open(
-      WalletContractV4.create({
-        workchain: 0,
-        publicKey: keys.publicKey,
-      })
-    );
-
-    const sender = wallet.sender(keys.secretKey);
+    const sender = await this.getSender(this.mnemonicStr);
 
     await this.swapTokens(sender, ASSETS.TON, ASSETS.USDT, amountOfTon);
+  }
+
+  public async swapUsdtToTon(amountOfUsdt: number) {
+    const sender = await this.getSender(this.mnemonicStr);
+
+    await this.swapTokens(sender, ASSETS.USDT, ASSETS.TON, amountOfUsdt);
   }
 
   private async estimateSwapAmount(
@@ -130,6 +132,20 @@ export class DeDustService {
     } catch (e) {
       console.log(e);
     }
+  }
+
+  private async getSender(mnemonicStr: string) {
+    const mnemonic = this.convertMnemonicStringToArray(mnemonicStr);
+    const keys = await mnemonicToPrivateKey(mnemonic);
+
+    const wallet = this.tonClient.open(
+      WalletContractV4.create({
+        workchain: 0,
+        publicKey: keys.publicKey,
+      })
+    );
+
+    return wallet.sender(keys.secretKey);
   }
 
   private convertMnemonicStringToArray(
